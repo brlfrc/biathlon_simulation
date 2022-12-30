@@ -2,7 +2,7 @@
 Simulation of biathlon event
 """
 
-import Graphic_simulation as gs
+import biathlon_simulation.Graphic_simulation as gs
 
 simulation=gs.Graphic_simulation()
 

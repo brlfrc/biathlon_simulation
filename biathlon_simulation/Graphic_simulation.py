@@ -5,7 +5,7 @@ this is the class for graphic simulation
 import bisect
 import math as ma
 
-import Competition as cp
+from . import Competition as cp
 
 class Graphic_simulation():
     """

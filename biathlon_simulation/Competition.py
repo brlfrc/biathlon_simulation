@@ -3,8 +3,7 @@ competition is the class to create a race.
 """
 import math as ma
 
-import Circuit as ci
-import Competitor as cm
+from . import Circuit as ci, Competitor as cm
 
 Debug=False
 print_partial_ranking=False

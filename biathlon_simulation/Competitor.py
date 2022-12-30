@@ -6,8 +6,8 @@ import random as rn
 import itertools
 import numpy as np
 
-from Player import Player
-from Skills import Fitness, Precision, Shooting
+from . import Player as p
+from . import Skills as sk
 
 class Competitor:
     """
@@ -21,14 +21,14 @@ class Competitor:
         shooting_rapidity_level = 0,
         precision_level=0,
         start_position=0,
-        player: Player = None
+        player: p.Player = None
         ):
-        self.player = Player(
+        self.player = p.Player(
             name= name,
             surname= surname,
-            fitness= Fitness(fitness_level),
-            shooting= Shooting(shooting_rapidity_level),
-            precision= Precision(precision_level)
+            fitness= sk.Fitness(fitness_level),
+            shooting= sk.Shooting(shooting_rapidity_level),
+            precision= sk.Precision(precision_level)
         )
         self.player.refresh_skills()
 
