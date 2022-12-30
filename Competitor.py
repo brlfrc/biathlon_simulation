@@ -7,9 +7,9 @@ import itertools
 import numpy as np
 
 from Player import Player
+from Skills import Fitness, Precision, Shooting
 
-
-class Competitor(Player):
+class Competitor:
     """
     competitor is the class for a player in a race.
     So there are the main methods for simulation of events: lap and shooting
@@ -20,9 +20,18 @@ class Competitor(Player):
         fitness_level = 0,
         shooting_rapidity_level = 0,
         precision_level=0,
-        start_position=0
+        start_position=0,
+        player: Player = None
         ):
-        super().__init__(name, surname, fitness_level, shooting_rapidity_level, precision_level)
+        self.player = Player(
+            name= name,
+            surname= surname,
+            fitness= Fitness(fitness_level),
+            shooting= Shooting(shooting_rapidity_level),
+            precision= Precision(precision_level)
+        )
+        self.player.refresh_skills()
+
         self.start_position = start_position
         self.partial_position =[]
         self.curr_time=[]
@@ -32,11 +41,14 @@ class Competitor(Player):
         self.is_started = False
         self.is_shooting = False
 
+    def name(self):
+        return self.player.name
+
     def lap_simulation(self, circuit):
         """
         Simulate time elapsed during a lap
         """
-        v_lap = np.random.normal(self.v_mean, self.sigma_v)
+        v_lap = np.random.normal(self.player.fitness.mean, self.player.fitness.sigma)
         return circuit.lap_length/v_lap
 
     def shooting_simulation(self, circuit):
@@ -44,15 +56,15 @@ class Competitor(Player):
         Simulate time elapsed during a shooting.
         penalty_lap == true there are penalty laps, else there is 1 minute of penalty
         """
-        t_shot = np.random.normal(self.t_shooting, self.sigma_t)
-        prob_precision= self.shooting_precision (t_shot)
+        t_shot = np.random.normal(self.player.shooting.mean, self.player.shooting.sigma)
+        prob_precision= self.shooting_precision(t_shot)
 
         valid_target = np.random.binomial(5, prob_precision)
         number_penalty_lap= 5 - valid_target
         self.target_error.append(number_penalty_lap)
 
         if circuit.penalty_lap_race:
-            v_penalty_lap = np.random.normal(self.v_mean, self.sigma_v)
+            v_penalty_lap = np.random.normal(self.player.fitness.mean, self.player.fitness.sigma)
             self.v_penalty_lap.append(v_penalty_lap)
             return t_shot+number_penalty_lap*circuit.penalty_lap_length/v_penalty_lap
         else:
@@ -66,7 +78,7 @@ class Competitor(Player):
         where
             t_bar = optimal_time - tan(pi/2 * probability_at_optimal)
         """
-        t_bar = self.t_shooting - ma.tan(ma.pi/2 * self.precision_parameter)
+        t_bar = self.player.shooting.mean - ma.tan(ma.pi/2 * self.player.precision.mean)
         precision_p= 2/ma.pi * ma.atan(t_shot-t_bar)
         if precision_p>0.5:
             return precision_p
